@@ -11,6 +11,7 @@ include_once 'config/settings-config.php';
   <title>Document</title>
   <link rel="stylesheet" href="src/css/bootstrap.css">
   <link rel="stylesheet" href="src/js/bootstrap.js">
+  <link rel="stylesheet" href="src/css/style.css">
 </head>
 
 <body>

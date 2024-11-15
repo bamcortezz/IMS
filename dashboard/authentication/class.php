@@ -83,6 +83,18 @@ class IMS {
         }
     }
 
+    public function isUserLogged() {
+        if (isset($_SESSION['session'])){
+            return true;
+        }
+    }
+
+    public function signOut() {
+        unset($_SESSION['session']);
+        echo "<script> alert('Signout Successfully'); window.location.href = '../../'; </script>";
+        exit;
+    }
+
 }
 
 if (isset($_POST['btn-signup'])) {
@@ -107,6 +119,10 @@ if (isset($_POST['btn-signin'])) {
     }
 }
 
+if(isset($_GET['signout'])) {
+    $signout = new IMS();
+    $signout->signOut();
+}
 
 
 

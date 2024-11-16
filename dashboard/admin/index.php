@@ -8,29 +8,27 @@ require_once '../authentication/class.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin || Inventory Management System</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin</title>
+    <link href="../../src/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../src/css/admin.css">
 </head>
 
 <body>
-    <div class="container mt-4">
-        <div class="d-flex justify-content-space-between">
+    <div class="wrapper">
+      <?php include '../../includes/sidebar-admin.php' ?>
+
+        <!-- Main Content -->
+        <div class="main-content">
             <h1>Welcome Admin</h1>
-            <button class="btn btn-danger"><a href="../authentication/class.php?signout" class="text-decoration-none text-black">Sign Out</a></button>
-        </div>
-        <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action">Manage Users</a>
-            <a href="#" class="list-group-item list-group-item-action">View Reports</a>
-            <a href="#" class="list-group-item list-group-item-action">Manage Inventory</a>
+            <p>Select an option from the sidebar to get started.</p>
         </div>
     </div>
 
-    <footer class="mt-5">
+    <footer class="text-center py-3">
         <p>&copy; 2024 Inventory Management System</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../src/js/script.js"></script>
 </body>
 
 </html>

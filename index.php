@@ -8,7 +8,7 @@ include_once 'config/settings-config.php';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Inventory Management System</title>
   <link rel="stylesheet" href="src/css/bootstrap.css">
   <link rel="stylesheet" href="src/js/bootstrap.js">
   <link rel="stylesheet" href="src/css/style.css">
@@ -50,7 +50,7 @@ include_once 'config/settings-config.php';
               <input type="password" name="password" required class="form-control" placeholder="Enter Password">
             </div>
             <div class="input-field">
-              <button type="submit" name="btn-signup" class="submit">Sign Up</button>
+              <button type="submit" name="btn-signup" class="submit">Sign up</button>
             </div>
             <div class="signin">
               <span>Already have an account? <a href="#" id="show-login">Login here</a></span>

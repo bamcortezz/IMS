@@ -91,7 +91,7 @@ class IMS {
 
     public function signOut() {
         unset($_SESSION['session']);
-        echo "<script> alert('Signout Successfully'); window.location.href = '../../'; </script>";
+        echo "<script> alert('Signout Successful'); window.location.href = '../../'; </script>";
         exit;
     }
 

@@ -3,19 +3,16 @@
     <hr>
     <ul class="nav flex-column">
         <li class="nav-item">
-            <a href="#" class="nav-link">Dashboard</a>
+            <a href="index.php" class="nav-link">Dashboard</a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">User Management</a>
+            <a href="user-management.php" class="nav-link">User Management</a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">Product</a>
+            <a href="product.php" class="nav-link">Product</a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link">Supplier</a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">Reporting</a>
+            <a href="supplier.php" class="nav-link">Supplier</a>
         </li>
     </ul>
     <div class="mt-auto">

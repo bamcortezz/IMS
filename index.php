@@ -12,6 +12,7 @@ include_once 'config/settings-config.php';
   <link rel="stylesheet" href="src/css/bootstrap.css">
   <link rel="stylesheet" href="src/js/bootstrap.js">
   <link rel="stylesheet" href="src/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -22,6 +23,17 @@ include_once 'config/settings-config.php';
         <form id="login-form" action="dashboard/authentication/class.php" method="POST">
           <div class="input-box">
             <h1>LOGIN</h1>
+            <?php
+            if (isset($_SESSION['alert']) && isset($_SESSION['alert']['type']) && isset($_SESSION['alert']['message'])) {
+              $alert = $_SESSION['alert'];
+              echo "<div class='alert alert-{$alert['type']} alert-dismissible fade show' role='alert'>
+            {$alert['message']}
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+              unset($_SESSION['alert']);
+            }
+            ?>
+
             <div class="input-field">
               <input type="email" name="email" required class="form-control" placeholder="Enter Email">
             </div>
@@ -64,6 +76,9 @@ include_once 'config/settings-config.php';
 
 
   <script src="src/js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

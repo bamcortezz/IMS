@@ -1,12 +1,10 @@
 <?php
-
 include_once __DIR__ . '/../../config/settings-config.php';
 require_once __DIR__ . '/../../database/dbconnection.php';
 
 
 class IMS
 {
-
     private $conn;
 
     public function __construct()
@@ -17,11 +15,22 @@ class IMS
 
     public function addUser($username, $email, $password)
     {
+
+        $stmt = $this->runQuery("SELECT * FROM users WHERE username = :username");
+        $stmt->execute(array(":username" => $username));
+
+        if ($stmt->rowCount() == 1) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Username already exists'];
+            header("Location: ../../index.php");
+            exit;
+        }
+
         $stmt = $this->runQuery("SELECT * FROM users WHERE email = :email");
         $stmt->execute(array(":email" => $email));
 
         if ($stmt->rowCount() > 0) {
-            echo "<script> alert('Email already exists'); window.location.href = '../../index.php'; </script>";
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Email already exists'];
+            header("Location: ../../index.php");
             exit;
         }
 
@@ -30,18 +39,18 @@ class IMS
         $execute = $stmt->execute(array(":username" => $username, ":email" => $email, ":password" => $hash_password));
 
         if ($execute) {
-            echo "<script> alert('User Added'); window.location.href = '../../index.php'; </script>";
+            $_SESSION['alert'] = ['type' => 'success', 'message' => 'User Added'];
+            header("Location: ../../index.php");
             exit;
         } else {
-            echo "<script> alert('Error'); window.location.href = '../../index.php'; </script>";
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error adding user'];
+            header("Location: ../../index.php");
             exit;
         }
     }
 
-
     public function login($email, $password)
     {
-
         $stmt = $this->runQuery("SELECT * FROM users WHERE email = :email");
         $stmt->execute(array(":email" => $email));
         $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -53,71 +62,106 @@ class IMS
                 $user_id = $userRow['id'];
 
                 $_SESSION['session'] = $user_id;
-
-
                 $this->logs($activiy, $user_id);
                 $this->redirect($userRow['role']);
             } else {
-                echo "<script> alert('Incorrect Password'); window.location.href = '../../'; </script>";
+                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Incorrect Password'];
+                header("Location: ../../");
+                exit;
             }
         } else {
-            echo "<script> alert('User Not Found'); window.location.href = '../../'; </script>";
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'User Not Found'];
+            header("Location: ../../");
+            exit;
         }
     }
 
-    public function addSupplier($supplier_name)
+    public function addSupplier($supplier_name, $contact_number)
     {
         $stmt = $this->runQuery("SELECT * FROM suppliers WHERE supplier_name = :supplier_name");
         $stmt->execute(array(":supplier_name" => $supplier_name));
 
         if ($stmt->rowCount() > 0) {
-            echo "<script> alert('Supplier already exist.'); window.location.href = '../admin/supplier.php';</script>";
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Supplier already exists.'];
+            header("Location: ../admin/supplier.php");
             exit;
         }
 
-        $stmt = $this->runQuery("INSERT INTO suppliers (supplier_name) VALUES (:supplier_name)");
-        $exec = $stmt->execute(array(":supplier_name" => $supplier_name));
-
-        if ($exec) {
-            echo "<script> alert('Supplier added successfully'); window.location.href = '../admin/supplier.php'; </script>";
-            exit;
-        }
-    }
-
-    public function addProduct($product_name, $stock, $description, $supplier_id)
-    {
-        $stmt = $this->runQuery("SELECT * FROM products WHERE product_name = :product_name AND supplier_id = :supplier_idF");
-        $stmt->execute(array(":product_name" => $product_name, ":supplier_id" => $supplier_id));
+        $stmt = $this->runQuery("SELECT * FROM suppliers WHERE contact_number = :contact_number");
+        $stmt->execute(array(":contact_number" => $contact_number));
 
         if ($stmt->rowCount() > 0) {
-            echo "<script> alert('Product already exists with this supplier.'); window.location.href = '../admin/product.php'; </script>";
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Contact number exists.'];
+            header("Location: ../admin/supplier.php");
             exit;
         }
 
-        $stmt = $this->runQuery("INSERT INTO products (product_name, stock, description, supplier_id) VALUES (:product_name, :stock, :description, :supplier_id)");
-        $exec = $stmt->execute(array(":product_name" => $product_name, ":stock" => $stock, ":description" => $description, ":supplier_id" => $supplier_id));
+        $stmt = $this->runQuery("INSERT INTO suppliers (supplier_name, contact_number) VALUES (:supplier_name, :contact_number)");
+        $execute = $stmt->execute(array(":supplier_name" => $supplier_name, ":contact_number" => $contact_number));
+
+        if ($execute) {
+            $_SESSION['alert'] = ['type' => 'success', 'message' => 'Supplier added successfully'];
+            header("Location: ../admin/supplier.php");
+            exit;
+        }
+    }
+
+    public function addProduct($product_name, $stock, $description)
+    {
+        $stmt = $this->runQuery("SELECT * FROM products WHERE product_name = :product_name");
+        $stmt->execute(array(":product_name" => $product_name));
+
+        if ($stmt->rowCount() > 0) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Product already exists.'];
+            header("Location: ../admin/product.php");
+            exit;
+        }
+
+        $stmt = $this->runQuery("INSERT INTO products (product_name, stock, description) VALUES (:product_name, :stock, :description)");
+        $exec = $stmt->execute(array(":product_name" => $product_name, ":stock" => $stock, ":description" => $description));
 
         if ($exec) {
-            echo "<script> alert('Product added successfully'); window.location.href = '../admin/product.php'; </script>";
+            $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product added successfully'];
+            header("Location: ../admin/product.php");
             exit;
         } else {
-            echo "<script> alert('Error adding product'); window.location.href = '../admin/product.php'; </script>";
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error adding product'];
+            header("Location: ../admin/product.php");
+            exit;
         }
     }
 
-    public function editUser($username, $role) 
+    public function purchaseProduct($product_id, $supplier_id, $quantity)
     {
+        $stmt = $this->runQuery("SELECT stock FROM products WHERE id = :product_id");
+        $stmt->execute(array(":product_id" => $product_id));
 
-    }
+        if ($stmt->rowCount() == 1) {
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
+            $current_stock = $product['stock'];
 
-    public function editSupplier($supplier_name) 
-    {
+            $new_stock = $current_stock + $quantity;
 
-    }
+            $stmt = $this->runQuery("UPDATE products SET stock = :new_stock WHERE id = :product_id");
+            $execute = $stmt->execute(array(":new_stock" => $new_stock, ":product_id" => $product_id));
 
-    public function editProduct($product_name, $stock, $description) 
-    {
+            if ($execute) {
+                $stmt = $this->runQuery("INSERT INTO product_purchase (product_id, supplier_id, quantity) VALUES (:product_id, :supplier_id, :quantity)");
+                $stmt->execute(array(":product_id" => $product_id, ":supplier_id" => $supplier_id, ":quantity" => $quantity));
 
+                $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product quantity updated'];
+                header("Location: ../admin/purchase-order.php");
+                exit;
+            } else {
+                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error updating stock'];
+                header("Location: ../admin/purchase-order.php");
+                exit;
+            }
+        } else {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Product not found'];
+            header("Location: ../admin/purchase-order.php");
+            exit;
+        }
     }
 
     public function runQuery($sql)
@@ -135,12 +179,13 @@ class IMS
     public function redirect($role)
     {
         if ($role === "admin") {
-            echo "<script> alert ('Welcome Admin!'); window.location.href = '../admin/index.php'; </script>";
+            header("Location: ../admin/product.php");
         } elseif ($role === "user") {
-            echo "<script> alert ('Welcome User!'); window.location.href = '../user/index.php'; </script>";
+            header("Location: ../user/index.php");
         } else {
-            echo "<script> alert('Role not recognized'); window.location.href = '../../'; </script>";
+            header("Location: ../../");
         }
+        exit;
     }
 
     public function isUserLogged()
@@ -153,7 +198,7 @@ class IMS
     public function signOut()
     {
         unset($_SESSION['session']);
-        echo "<script> alert('Signout Successful'); window.location.href = '../../'; </script>";
+        header("Location: ../../");
         exit;
     }
 }
@@ -187,23 +232,33 @@ if (isset($_GET['signout'])) {
 
 
 if (isset($_POST['btn-supplier'])) {
-    if (isset($_POST['supplier_name'])) {
+    if (isset($_POST['supplier_name'], $_POST['contact_number'])) {
         $supplier_name = $_POST['supplier_name'];
-
+        $contact_number = $_POST['contact_number'];
 
         $supplier = new IMS();
-        $supplier->addSupplier($supplier_name);
+        $supplier->addSupplier($supplier_name, $contact_number);
     }
 }
 
 if (isset($_POST['btn-product'])) {
-    if (isset($_POST['product_name'], $_POST['stock'], $_POST['description'], $_POST['supplier_id'])) {
+    if (isset($_POST['product_name'], $_POST['stock'], $_POST['description'])) {
         $product_name = $_POST['product_name'];
         $stock = $_POST['stock'];
         $description = $_POST['description'];
-        $supplier_id = $_POST['supplier_id'];
 
         $product = new IMS();
-        $product->addProduct($product_name, $stock, $description, $supplier_id);
+        $product->addProduct($product_name, $stock, $description);
+    }
+}
+
+if (isset($_POST['btn-purchase'])) {
+    if (isset($_POST['product_id'], $_POST['quantity'], $_POST['supplier_id'])) {
+        $product_id = $_POST['product_id'];
+        $quantity = $_POST['quantity'];
+        $supplier_id = $_POST['supplier_id'];
+
+        $purchase = new IMS();
+        $purchase->purchaseProduct($product_id, $supplier_id, $quantity);
     }
 }

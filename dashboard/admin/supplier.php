@@ -2,8 +2,14 @@
 require_once '../authentication/class.php';
 
 
-$supplier_ims = new IMS();
-$stmt = $supplier_ims->runQuery("SELECT id, supplier_name FROM suppliers");
+$supplier = new IMS();
+
+if (!$supplier->isUserLogged()) {
+    header("Location: ../../");
+    exit;
+}
+
+$stmt = $supplier->runQuery("SELECT id, supplier_name, contact_number FROM suppliers");
 $stmt->execute();
 $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -17,23 +23,39 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Supplier</title>
     <link href="../../src/css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="../../src/css/admin.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
 </head>
 
 <body>
     <div class="wrapper">
-        <?php include '../../includes/sidebar-admin.php'; ?>
+        <?php include '../../includes/sidebar-admin.php' ?>
+
 
         <div class="main-content">
             <h1>Supplier</h1>
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSupplierModal">Add Supplier</button>
             </div>
+            <div>
+                <?php
+                if (isset($_SESSION['alert']) && isset($_SESSION['alert']['type']) && isset($_SESSION['alert']['message'])) {
+                    $alert = $_SESSION['alert'];
+                    echo "  <div class='alert alert-{$alert['type']} alert-dismissible fade show' role='alert'>
+                                    {$alert['message']}
+                                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                         </div>";
+                    unset($_SESSION['alert']);
+                }
+                ?>
+            </div>
             <div class="table-responsive mt-4">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
                             <th>Supplier Name</th>
+                            <th>Contact Number</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -41,8 +63,8 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php if (!empty($suppliers)): ?>
                             <?php foreach ($suppliers as $supplier): ?>
                                 <tr>
-                                    <td><?= $supplier['id'] ?></td>
                                     <td><?= htmlspecialchars($supplier['supplier_name']) ?></td>
+                                    <td><?= $supplier['contact_number'] ?></td>
                                     <td>
                                         <a href="#" class="btn btn-sm btn-primary">Edit</a>
                                         <a href="#" class="btn btn-sm btn-danger">Delete</a>
@@ -73,6 +95,10 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <label for="supplierName" class="form-label">Supplier Name</label>
                             <input type="text" class="form-control" id="supplierName" name="supplier_name" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="supplierName" class="form-label">Contact Number</label>
+                            <input type="number" class="form-control" id="supplierContact" name="contact_number" required>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -84,6 +110,8 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <script src="../../src/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

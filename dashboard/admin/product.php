@@ -3,17 +3,18 @@ require_once '../authentication/class.php';
 
 $product = new IMS();
 
-$stmt = $product->runQuery("SELECT p.id, p.product_name, p.stock, p.description, s.supplier_name 
-                             FROM products p 
-                             LEFT JOIN suppliers s ON p.supplier_id = s.id");
+if (!$product->isUserLogged()) {
+    header("Location: ../../");
+    exit;
+}
+
+$stmt = $product->runQuery("SELECT id, product_name, stock, description FROM products");
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 
 $stmt = $product->runQuery("SELECT id, supplier_name FROM suppliers");
 $stmt->execute();
 $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 <!DOCTYPE html>
@@ -25,6 +26,8 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Product</title>
     <link href="../../src/css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="../../src/css/admin.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
 <body>
@@ -36,15 +39,25 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
             </div>
+            <div>
+                <?php
+                if (isset($_SESSION['alert']) && isset($_SESSION['alert']['type']) && isset($_SESSION['alert']['message'])) {
+                    $alert = $_SESSION['alert'];
+                    echo "  <div class='alert alert-{$alert['type']} alert-dismissible fade show' role='alert'>
+                                    {$alert['message']}
+                                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                         </div>";
+                    unset($_SESSION['alert']);
+                }
+                ?>
+            </div>
             <div class="table-responsive mt-4">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
-                            <th>Product Name</th>
-                            <th>Stock</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
                             <th>Description</th>
-                            <th>Suppliers</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -52,24 +65,20 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php if (!empty($products)): ?>
                             <?php foreach ($products as $product): ?>
                                 <tr>
-                                    <td><?= $product['id'] ?></td>
-                                    <td><?= $product['product_name'] ?></td>
+                                    <td><?= htmlspecialchars($product['product_name']) ?></td>
                                     <td><?= $product['stock'] ?></td>
                                     <td><?= $product['description'] ?></td>
-                                    <td><?= $product['supplier_name'] ?></td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-primary">Edit</a>
                                         <a href="#" class="btn btn-sm btn-danger">Delete</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" class="text-center">No products found</td>
+                                <td colspan="4" class="text-center">No products found</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
-
                 </table>
             </div>
         </div>
@@ -89,21 +98,12 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <input type="text" class="form-control" id="productName" name="product_name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="stock" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="stock" name="stock" required>
+                            <label for="productStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="productStock" name="stock" required>
                         </div>
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="supplierId" class="form-label">Supplier</label>
-                            <select class="form-select" id="supplierId" name="supplier_id" required>
-                                <option value="" disabled selected>Select a supplier</option>
-                                <?php foreach ($suppliers as $supplier): ?>
-                                    <option value="<?= $supplier['id'] ?>"><?= $supplier['supplier_name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                            <label for="productDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="productDescription" name="description" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -116,6 +116,8 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <script src="../../src/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -11,6 +11,7 @@ require_once '../authentication/class.php';
     <title>User</title>
     <link rel="stylesheet" href="../../src/css/bootstrap.css">
     <link rel="stylesheet" href="../../src/css/user.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -28,6 +29,7 @@ require_once '../authentication/class.php';
     </footer>
 
     <script src="../../src/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 </body>
 
 </html>

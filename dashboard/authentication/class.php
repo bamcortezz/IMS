@@ -1,14 +1,27 @@
 <?php
 include_once __DIR__ . '/../../config/settings-config.php';
 require_once __DIR__ . '/../../database/dbconnection.php';
+require_once __DIR__ . '/../../src/vendor/autoload.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 
 
 class IMS
 {
     private $conn;
+    private $smtp_email;
+    private $smtp_password;
+    private $settings;
 
     public function __construct()
     {
+        $this->settings = new SystemConfig();
+        $this->smtp_email = $this->settings->getSmtpEmail();
+        $this->smtp_password = $this->settings->getSmtpPassword();
+
         $database = new Database();
         $this->conn = $database->dbConnection();
     }
@@ -74,6 +87,62 @@ class IMS
             header("Location: ../../");
             exit;
         }
+    }
+
+    public function forgotPassword($email)
+    {
+        $stmt = $this->runQuery("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(array(":email" => $email));
+
+        if ($stmt->rowCount() == 0) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Email not found.'];
+            header("Location: ../../forgot-password.php");
+            exit;
+        }
+
+        $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+        $userId = $userRow['id'];
+
+        $resetToken = bin2hex(random_bytes(32));
+
+        $stmt = $this->runQuery("UPDATE users SET reset_token = :reset_token WHERE id = :user_id");
+        $stmt->execute(array(":reset_token" => $resetToken, ":user_id" => $userId));
+
+        $resetLink = "http://localhost/ims/reset-password.php?token=$resetToken&id=$userId";
+        $message = "Please click on the following link to reset your password: <a href='$resetLink'>Click Here!</a>";
+        $subject = "Password Reset Request";
+
+        $this->send_email($email, $message, $subject, $this->smtp_email, $this->smtp_password);
+
+        $_SESSION['alert'] = ['type' => 'success', 'message' => 'A password reset link has been sent to your email.'];
+        header("Location: ../../forgot-password.php");
+        exit;
+    }
+
+    public function validateResetToken($userId, $token)
+    {
+        $stmt = $this->runQuery("SELECT * FROM users WHERE id = :user_id AND reset_token = :reset_token");
+        $stmt->execute(array(":user_id" => $userId, ":reset_token" => $token));
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function resetPassword($userId, $newPassword)
+    {
+        
+        $hash_password = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        $stmt = $this->runQuery("UPDATE users SET password = :password, reset_token = NULL WHERE id = :user_id");
+        $stmt->execute(array(":password" => $hash_password, ":user_id" => $userId));
+
+        $_SESSION['alert'] = ['type' => 'success', 'message' => 'Your password has been reset successfully.'];
+        header("Location: index.php");
+        exit;
     }
 
     public function addSupplier($supplier_name, $contact_number)
@@ -164,6 +233,24 @@ class IMS
         }
     }
 
+    function send_email($email, $message, $subject, $smtp_email, $smtp_password)
+    {
+        $mail = new PHPMailer();
+        $mail->isSMTP();
+        $mail->SMTPDebug = 0;
+        $mail->SMTPAuth = true;
+        $mail->SMTPSecure = "tls";
+        $mail->Host = "smtp.gmail.com";
+        $mail->Port = 587;
+        $mail->addAddress($email);
+        $mail->Username = $smtp_email;
+        $mail->Password = $smtp_password;
+        $mail->setFrom($smtp_email, "no-reply");
+        $mail->Subject = $subject;
+        $mail->msgHTML($message);
+        $mail->Send();
+    }
+
     public function runQuery($sql)
     {
         $stmt = $this->conn->prepare($sql);
@@ -229,6 +316,14 @@ if (isset($_GET['signout'])) {
     $signout = new IMS();
     $signout->signOut();
 }
+
+if (isset($_POST['btn-forgot-password'])) {
+    $email = trim($_POST['email']);
+
+    $forgotPassword = new IMS();
+    $forgotPassword->forgotPassword($email);
+}
+
 
 
 if (isset($_POST['btn-supplier'])) {

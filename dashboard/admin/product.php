@@ -15,6 +15,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $stmt = $product->runQuery("SELECT id, supplier_name FROM suppliers");
 $stmt->execute();
 $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+if (isset($_GET['delete_id'])) {
+    $deleteProduct = $_GET['delete_id'];
+    $product->deleteProduct($deleteProduct);
+}
 ?>
 
 <!DOCTYPE html>
@@ -24,10 +29,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product</title>
-    <link href="../../src/css/bootstrap.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../src/css/admin.css">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <?php include '../../includes/link-css.php' ?>
 </head>
 
 <body>
@@ -69,7 +71,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= $product['stock'] ?></td>
                                     <td><?= $product['description'] ?></td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                        <button class="btn btn-sm btn-danger" onclick="confirmDeleteProduct(<?= $product['id'] ?>, '<?= $product['product_name'] ?>')">Delete</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -115,9 +117,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <script src="../../src/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <?php include '../../includes/link-js.php' ?>
 </body>
 
 </html>

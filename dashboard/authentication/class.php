@@ -134,7 +134,7 @@ class IMS
 
     public function resetPassword($userId, $newPassword)
     {
-        
+
         $hash_password = password_hash($newPassword, PASSWORD_DEFAULT);
 
         $stmt = $this->runQuery("UPDATE users SET password = :password, reset_token = NULL WHERE id = :user_id");
@@ -143,6 +143,31 @@ class IMS
         $_SESSION['alert'] = ['type' => 'success', 'message' => 'Your password has been reset successfully.'];
         header("Location: index.php");
         exit;
+    }
+
+    public function deleteUser($userId)
+    {
+        $stmt = $this->runQuery("SELECT * FROM users WHERE id = :user_id");
+        $stmt->execute(array(":user_id" => $userId));
+
+        if ($stmt->rowCount() > 0) {
+            $stmt = $this->runQuery("DELETE FROM users WHERE id = :user_id");
+            $execute = $stmt->execute(array(":user_id" => $userId));
+
+            if ($execute) {
+                $_SESSION['alert'] = ['type' => 'success', 'message' => 'User deleted successfully.'];
+                header("Location: ../admin/user-management.php");
+                exit;
+            } else {
+                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error deleting user.'];
+                header("Location: ../admin/user-management.php");
+                exit;
+            }
+        } else {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'User not found.'];
+            header("Location: ../admin/user-management.php");
+            exit;
+        }
     }
 
     public function addSupplier($supplier_name, $contact_number)
@@ -175,6 +200,57 @@ class IMS
         }
     }
 
+    public function updateSupplier($id, $supplier_name, $contact_number)
+    {
+        $stmt = $this->runQuery("SELECT * FROM suppliers WHERE id = :id");
+        $stmt->execute(array(":id" => $id));
+
+        if ($stmt->rowCount() > 0) {
+            $stmt = $this->runQuery("UPDATE suppliers SET supplier_name = :supplier_name, contact_number = :contact_number WHERE id = :id");
+            $execute = $stmt->execute(array(":supplier_name" => $supplier_name, ":contact_number" => $contact_number, ":id" => $id));
+
+            if ($execute) {
+                $_SESSION['alert'] = ['type' => 'success', 'message' => 'Supplier edit successfully'];
+                header("Location: ../admin/supplier.php");
+                exit;
+            } else {
+                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error updating supplier'];
+                header("Location: ../admin/supplier.php");
+                exit;
+            }
+        } else {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'No supplier found'];
+            header("Location: ../admin/supplier.php");
+            exit;
+        }
+    }
+
+    public function deleteSupplier($supplierId)
+    {
+        $stmt = $this->runQuery("SELECT * FROM suppliers WHERE id = :suppliers_id");
+        $stmt->execute(array(":suppliers_id" => $supplierId));
+
+        if ($stmt->rowCount() > 0) {
+
+            $stmt = $this->runQuery("DELETE FROM suppliers WHERE id = :suppliers_id");
+            $execute = $stmt->execute(array(":suppliers_id" => $supplierId));
+
+            if ($execute) {
+                $_SESSION['alert'] = ['type' => 'success', 'message' => 'Supplier successfully deleted.'];
+                header("Location: ../admin/supplier.php");
+                exit;
+            } else {
+                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error deleting supplier.'];
+                header("Location: ../admin/supplier.php");
+                exit;
+            }
+        } else {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Supplier not found.'];
+            header("Location: ../admin/supplier.php");
+            exit;
+        }
+    }
+
     public function addProduct($product_name, $stock, $description)
     {
         $stmt = $this->runQuery("SELECT * FROM products WHERE product_name = :product_name");
@@ -195,6 +271,31 @@ class IMS
             exit;
         } else {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error adding product'];
+            header("Location: ../admin/product.php");
+            exit;
+        }
+    }
+
+    public function deleteProduct($productId)
+    {
+        $stmt = $this->runQuery("SELECT * FROM products WHERE id = :product_id");
+        $stmt->execute(array(":product_id" => $productId));
+
+        if ($stmt->rowCount() > 0) {
+            $stmt = $this->runQuery("DELETE FROM products WHERE id = :product_id");
+            $execute = $stmt->execute(array(":product_id" => $productId));
+
+            if ($execute) {
+                $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product deleted'];
+                header("Location: ../admin/product.php");
+                exit;
+            } else {
+                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error deleting product'];
+                header("Location: ../admin/product.php");
+                exit;
+            }
+        } else {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'No product found'];
             header("Location: ../admin/product.php");
             exit;
         }
@@ -233,6 +334,35 @@ class IMS
         }
     }
 
+    public function getUserCount()
+    {
+        $stmt = $this->runQuery("SELECT COUNT(*) FROM users");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getProductCount()
+    {
+        $stmt = $this->runQuery("SELECT COUNT(*) FROM products");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getSupplierCount()
+    {
+        $stmt = $this->runQuery("SELECT COUNT(*) FROM suppliers");
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    public function getRecentLogs()
+    {
+        $stmt = $this->runQuery("SELECT * FROM logs ORDER BY created_at DESC LIMIT 6");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
     function send_email($email, $message, $subject, $smtp_email, $smtp_password)
     {
         $mail = new PHPMailer();
@@ -266,9 +396,9 @@ class IMS
     public function redirect($role)
     {
         if ($role === "admin") {
-            header("Location: ../admin/product.php");
+            header("Location: ../admin/");
         } elseif ($role === "user") {
-            header("Location: ../user/index.php");
+            header("Location: ../user/");
         } else {
             header("Location: ../../");
         }
@@ -333,6 +463,17 @@ if (isset($_POST['btn-supplier'])) {
 
         $supplier = new IMS();
         $supplier->addSupplier($supplier_name, $contact_number);
+    }
+}
+
+if (isset($_POST['btn-edit-supplier'])) {
+    if (isset($_POST['supplier_name'], $_POST['contact_number'], $_POST['supplier_id'])) {
+        $supplier_name = $_POST['supplier_name'];
+        $contact_number = $_POST['contact_number'];
+        $supplier_id = $_POST['supplier_id'];
+
+        $supplier = new IMS();
+        $supplier->updateSupplier($supplier_id, $supplier_name, $contact_number);
     }
 }
 

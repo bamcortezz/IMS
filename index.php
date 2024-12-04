@@ -11,6 +11,7 @@ include_once 'config/settings-config.php';
    <title>Inventory Management System</title>
    <link rel="stylesheet" href="src/css/bootstrap.css">
    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
@@ -53,7 +54,7 @@ include_once 'config/settings-config.php';
                   <a href="forgot-password.php" class="btn btn-link">Forgot Password?</a>
                </div>
             </form>
-
+               
             <form id="registration-form" action="dashboard/authentication/class.php" method="POST" style="display: none;">
                <h2 class="text-center mb-4">Registration</h2>
 
@@ -78,9 +79,6 @@ include_once 'config/settings-config.php';
 
                <div class="text-center">
                   <span>Already have an account? <a href="#" id="show-login">Login here</a></span>
-               </div>
-               <div class="text-center mt-2">
-                  <a href="forgot-password.php" class="btn btn-link">Forgot Password?</a>
                </div>
             </form>
          </div>

@@ -3,7 +3,7 @@ require_once '../authentication/class.php';
 
 $purchase_order = new IMS();
 
-if (!$purchase_order->isUserLogged()){
+if (!$purchase_order->isUserLogged()) {
     header("Location: ../../");
     exit;
 }
@@ -24,10 +24,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
-    <link href="../../src/css/bootstrap.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../src/css/admin.css">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <?php include '../../includes/link-css.php' ?>
 </head>
 
 <body>
@@ -80,9 +77,8 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <script src="../../src/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <?php include '../../includes/link-js.php' ?>
 </body>
 
 </html>

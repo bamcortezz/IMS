@@ -1,5 +1,6 @@
 <?php
-require_once '../authentication/class.php';
+require_once '../authentication/authentication.php';
+require_once '../authentication/product-class.php';
 
 $sales_order = new IMS();
 

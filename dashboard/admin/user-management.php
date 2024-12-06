@@ -1,20 +1,23 @@
 <?php
-require_once '../authentication/class.php';
+require_once '../authentication/authentication.php';
+require_once '../authentication/product-class.php';
 
-$userManagement = new IMS();
+$isLogin = new IMS();
+$userManagement = new ProductSupplierFunctions();
 
-if (!$userManagement->isUserLogged()) {
+if (!$isLogin->isUserLogged()) {
     header("Location: ../../");
     exit;
 }
 
-$stmt = $userManagement->runQuery("SELECT id, username, email, role FROM users");
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 if (isset($_GET['delete_id'])) {
     $deleteUser = $_GET['delete_id'];
     $userManagement->deleteUser($deleteUser);
+}
+
+if (isset($_GET['reactivate_id'])) {
+    $reactivateUser = $_GET['reactivate_id'];
+    $userManagement->reactivateUser($reactivateUser);
 }
 ?>
 
@@ -34,6 +37,10 @@ if (isset($_GET['delete_id'])) {
 
         <div class="main-content">
             <h1>User Management</h1>
+            <div class="d-flex justify-content-end mb-3">
+                <a href="archive-user.php" class="btn btn-secondary">Show Archived Users</a>
+            </div>
+
             <div>
                 <?php
                 if (isset($_SESSION['alert']) && isset($_SESSION['alert']['type']) && isset($_SESSION['alert']['message'])) {
@@ -46,6 +53,7 @@ if (isset($_GET['delete_id'])) {
                 }
                 ?>
             </div>
+
             <div class="table-responsive mt-4">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
@@ -57,8 +65,8 @@ if (isset($_GET['delete_id'])) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($users)): ?>
-                            <?php foreach ($users as $user): ?>
+                        <?php if (!empty($userManagement->getUser())): ?>
+                            <?php foreach ($userManagement->getUser() as $user): ?>
                                 <tr>
                                     <td><?= $user['username'] ?></td>
                                     <td><?= $user['email'] ?></td>
@@ -79,7 +87,7 @@ if (isset($_GET['delete_id'])) {
         </div>
     </div>
 
-   <?php include '../../includes/link-js.php' ?>
+    <?php include '../../includes/link-js.php' ?>
 </body>
 
 </html>

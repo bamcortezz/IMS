@@ -1,19 +1,14 @@
 <?php
-require_once '../authentication/class.php';
+require_once '../authentication/authentication.php';
+require_once '../authentication/product-class.php';
 
-$dashboard = new IMS();
+$dashboard = new ProductSupplierFunctions();
+$isLogin = new IMS();
 
-if (!$dashboard->isUserLogged()) {
+if (!$isLogin->isUserLogged()) {
     header("Location: ../../");
     exit;
 }
-
-
-$userCount = $dashboard->getUserCount();
-$productCount = $dashboard->getProductCount();
-$supplierCount = $dashboard->getSupplierCount();
-$logs = $dashboard->getRecentLogs();
-
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +33,7 @@ $logs = $dashboard->getRecentLogs();
                     <div class="card bg-primary text-white py-2">
                         <div class="card-body">
                             <h5 class="card-title">Users</h5>
-                            <h2 class="card-text"><?php echo $userCount; ?></h2>
+                            <h2 class="card-text"><?php echo $dashboard->getUserCount(); ?></h2>
                         </div>
                     </div>
                 </div>
@@ -47,7 +42,7 @@ $logs = $dashboard->getRecentLogs();
                     <div class="card bg-success text-white py-2">
                         <div class="card-body">
                             <h5 class="card-title">Products</h5>
-                            <h2 class="card-text"><?php echo $productCount; ?></h2>
+                            <h2 class="card-text"><?php echo $dashboard->getProductCount(); ?></h2>
                         </div>
                     </div>
                 </div>
@@ -56,7 +51,7 @@ $logs = $dashboard->getRecentLogs();
                     <div class="card bg-warning text-white py-2">
                         <div class="card-body">
                             <h5 class="card-title">Suppliers</h5>
-                            <h2 class="card-text"><?php echo $supplierCount; ?></h2>
+                            <h2 class="card-text"><?php echo $dashboard->getSupplierCount(); ?></h2>
                         </div>
                     </div>
                 </div>
@@ -78,7 +73,7 @@ $logs = $dashboard->getRecentLogs();
                         </thead>
                         <tbody>
                             <?php
-                            foreach ($logs as $index => $log) {
+                            foreach ($dashboard->getRecentLogs() as $index => $log) {
                                 echo '<tr>';
                                 echo '<th scope="row">' . ($index + 1) . '</th>';
                                 echo '<td>' . htmlspecialchars($log['user_id']) . '</td>';

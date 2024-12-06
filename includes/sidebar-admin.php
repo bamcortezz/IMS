@@ -48,7 +48,7 @@
     </ul>
     <div class="mt-auto">
         <button class="btn btn-danger w-100">
-            <a href="../authentication/class.php?signout" class="text-decoration-none text-white">
+            <a href="../authentication/authentication.php?signout" class="text-decoration-none text-white">
                 <i class="bi bi-box-arrow-right me-2"></i> Sign Out
             </a>
         </button>

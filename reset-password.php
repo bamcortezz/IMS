@@ -1,34 +1,37 @@
 <?php
 include_once 'config/settings-config.php';
-require_once 'dashboard/authentication/class.php';
+require_once 'dashboard/authentication/authentication.php';
 
 if (isset($_GET['token']) && isset($_GET['id'])) {
-   $token = $_GET['token'];
-   $userId = $_GET['id'];
+    $token = $_GET['token'];
+    $userId = $_GET['id'];
 
-   $resetPass = new IMS();
+    $resetPass = new IMS();
 
-   if ($resetPass->validateResetToken($userId, $token)){
-      if (isset($_POST['btn-reset-password'])) {
-         $newPassword = trim($_POST['password']);
-         $resetPass->resetPassword($userId, $newPassword);
-      }
-   } else {
-      $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Invalid token.'];
-      header("Location: forgot-password.php");
-      exit;
-   }
+    if ($resetPass->validateResetToken($userId, $token)) {
+        if (isset($_POST['btn-reset-password'])) {
+            $newPassword = trim($_POST['password']);
+            $resetPass->resetPassword($userId, $newPassword);
+        }
+    } else {
+        $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Invalid token.'];
+        header("Location: forgot-password.php");
+        exit;
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="src/css/style.css">
 </head>
+
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="card p-4" style="max-width: 500px; width: 100%;">
@@ -60,4 +63,5 @@ if (isset($_GET['token']) && isset($_GET['id'])) {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
+
 </html>

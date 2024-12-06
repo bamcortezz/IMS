@@ -14,7 +14,7 @@
     </ul>
     <div class="mt-auto">
         <button class="btn btn-success w-100">
-            <a href="../authentication/class.php?signout" class="text-decoration-none text-white">Sign Out</a>
+            <a href="../authentication/authentication.php?signout" class="text-decoration-none text-white">Sign Out</a>
         </button>
     </div>
 </nav>

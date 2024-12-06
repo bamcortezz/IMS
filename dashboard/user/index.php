@@ -1,5 +1,5 @@
 <?php
-require_once '../authentication/class.php';
+require_once '../authentication/authentication.php';
 ?>
 
 <!DOCTYPE html>

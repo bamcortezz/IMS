@@ -1,17 +1,15 @@
 <?php
-require_once '../authentication/class.php';
+require_once '../authentication/authentication.php';
+require_once '../authentication/product-class.php';
 
 
-$supplier = new IMS();
+$isLogin = new IMS();
+$supplier = new ProductSupplierFunctions();
 
-if (!$supplier->isUserLogged()) {
+if (!$isLogin->isUserLogged()) {
     header("Location: ../../");
     exit;
 }
-
-$stmt = $supplier->runQuery("SELECT id, supplier_name, contact_number FROM suppliers");
-$stmt->execute();
-$suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (isset($_GET['delete_id'])) {
     $deleteSupplier = $_GET['delete_id'];
@@ -38,7 +36,12 @@ if (isset($_GET['delete_id'])) {
         <div class="main-content">
             <h1>Supplier</h1>
             <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSupplierModal">Add Supplier</button>
+                <div class="me-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSupplierModal">Add Supplier</button>
+                </div>
+                <div>
+                    <a href="archive-supplier.php" class="btn btn-secondary">Show Archived Suppliers</a>
+                </div>
             </div>
             <div>
                 <?php
@@ -62,8 +65,8 @@ if (isset($_GET['delete_id'])) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($suppliers)): ?>
-                            <?php foreach ($suppliers as $supplier): ?>
+                        <?php if (!empty($supplier->getSupplierName())): ?>
+                            <?php foreach ($supplier->getSupplierName() as $supplier): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($supplier['supplier_name']) ?></td>
                                     <td><?= $supplier['contact_number'] ?></td>
@@ -87,7 +90,7 @@ if (isset($_GET['delete_id'])) {
     <div class="modal fade" id="addSupplierModal" tabindex="-1" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="../authentication/class.php">
+                <form method="POST" action="../authentication/product-class.php">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addSupplierModalLabel">Add New Supplier</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -138,6 +141,7 @@ if (isset($_GET['delete_id'])) {
             </div>
         </div>
     </div>
+
 
     <?php include '../../includes/link-js.php' ?>
 </body>

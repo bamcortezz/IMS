@@ -8,20 +8,23 @@ body {
     flex: 1;
 }
 .sidebar {
-    width: 250px;
+    width: 300px;
     background-color: #343a40;
     color: #fff;
     min-height: 100vh;
     position: fixed;
 }
+
 .sidebar .nav-link {
     color: #fff;
 }
+
 .sidebar .nav-link:hover {
     background-color: #495057;
+    border-radius: 5px;
 }
 .main-content {
-    margin-left: 250px;
+    margin-left: 300px;
     padding: 20px;
     flex:1;
 }

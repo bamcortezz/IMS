@@ -10,6 +10,7 @@ include_once 'config/settings-config.php';
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Forgot Password</title>
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="src/css/style.css">
 </head>
 
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
@@ -28,7 +29,7 @@ include_once 'config/settings-config.php';
          ?>
          <p class="text-center mb-4">Enter your email address below, and we'll send you a link to reset your password.</p>
 
-         <form method="POST" action="dashboard/authentication/class.php">
+         <form method="POST" action="dashboard/authentication/authentication.php">
             <div class="mb-3">
                <label for="email" class="form-label">Email address</label>
                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>

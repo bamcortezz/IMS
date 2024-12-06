@@ -1,24 +1,18 @@
 <?php
-require_once '../authentication/class.php';
+require_once '../authentication/authentication.php';
+require_once '../authentication/product-class.php';
 
-$product = new IMS();
+$isLogin = new IMS();
+$product = new ProductSupplierFunctions();
 
-if (!$product->isUserLogged()) {
+if (!$isLogin->isUserLogged()) {
     header("Location: ../../");
     exit;
 }
 
-$stmt = $product->runQuery("SELECT id, product_name, stock, description FROM products");
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$stmt = $product->runQuery("SELECT id, supplier_name FROM suppliers");
-$stmt->execute();
-$suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 if (isset($_GET['delete_id'])) {
     $deleteProduct = $_GET['delete_id'];
-    $product->deleteProduct($deleteProduct);
+    $delete_product->deleteProduct($deleteProduct);
 }
 ?>
 
@@ -64,8 +58,8 @@ if (isset($_GET['delete_id'])) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($products)): ?>
-                            <?php foreach ($products as $product): ?>
+                        <?php if (!empty($product->getProduct())): ?>
+                            <?php foreach ($product->getProduct() as $product): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($product['product_name']) ?></td>
                                     <td><?= $product['stock'] ?></td>
@@ -89,7 +83,7 @@ if (isset($_GET['delete_id'])) {
     <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="../authentication/class.php">
+                <form method="POST" action="../authentication/product-class.php">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

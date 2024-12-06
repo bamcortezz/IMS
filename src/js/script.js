@@ -62,7 +62,7 @@ function confirmDeleteSupplier(id, username) {
 function confirmDeleteProduct(id, product) {
     Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this prodcut " + product +"!",
+        text: "You won't be able to revert this prodcut " + product + "!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -74,3 +74,37 @@ function confirmDeleteProduct(id, product) {
         }
     });
 }
+
+function reactivateUser(userId, username) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to reactivate the user "${username}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, reactivate!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'user-management.php?reactivate_id=' + userId;
+        }
+    });
+}
+
+function reactivateSupplier(supplierId, supplierName) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to reactivate the supplier "${supplierName}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, reactivate!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'archive-supplier.php?reactivate_id=' + supplierId;
+        }
+    });
+}
+
+

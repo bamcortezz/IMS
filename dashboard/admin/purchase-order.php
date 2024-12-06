@@ -1,20 +1,14 @@
 <?php
-require_once '../authentication/class.php';
+require_once '../authentication/authentication.php';
+require_once '../authentication/product-class.php';
 
-$purchase_order = new IMS();
+$isLogin = new IMS();
+$purchase_order = new ProductSupplierFunctions();
 
-if (!$purchase_order->isUserLogged()) {
+if (!$isLogin->isUserLogged()) {
     header("Location: ../../");
     exit;
 }
-
-$stmt = $purchase_order->runQuery("SELECT id, product_name FROM products");
-$stmt->execute();
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$stmt = $purchase_order->runQuery("SELECT id, supplier_name FROM suppliers");
-$stmt->execute();
-$suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +44,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <label for="productId" class="form-label">Select Product</label>
                             <select class="form-select" id="productId" name="product_id" required>
                                 <option value="" disabled selected>Select a product</option>
-                                <?php foreach ($products as $product): ?>
+                                <?php foreach ($purchase_order->getProduct() as $product): ?>
                                     <option value="<?= $product['id'] ?>"><?= $product['product_name'] ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -63,7 +57,7 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <label for="supplierId" class="form-label">Select Supplier</label>
                             <select class="form-select" id="supplierId" name="supplier_id" required>
                                 <option value="" disabled selected>Select a supplier</option>
-                                <?php foreach ($suppliers as $supplier): ?>
+                                <?php foreach ($purchase_order->getSupplierName() as $supplier): ?>
                                     <option value="<?= $supplier['id'] ?>"><?= $supplier['supplier_name'] ?></option>
                                 <?php endforeach; ?>
                             </select>

@@ -38,7 +38,7 @@ if (isset($_GET['reactivate_id'])) {
         <div class="main-content">
             <h1>User Management</h1>
             <div class="d-flex justify-content-end mb-3">
-                <a href="archive-user.php" class="btn btn-secondary">Show Archived Users</a>
+                <a href="archive-user.php" class="btn btn-warning">Show Archived Users</a>
             </div>
 
             <div>

@@ -12,7 +12,7 @@ if (!$isLogin->isUserLogged()) {
 
 if (isset($_GET['delete_id'])) {
     $deleteProduct = $_GET['delete_id'];
-    $delete_product->deleteProduct($deleteProduct);
+    $product->deleteProduct($deleteProduct);
 }
 ?>
 
@@ -33,7 +33,12 @@ if (isset($_GET['delete_id'])) {
         <div class="main-content">
             <h1>Product</h1>
             <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+                <div class="me-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+                </div>
+                <div>
+                    <a href="archive-product.php" class="btn btn-warning">Show Archived Products</a>
+                </div>
             </div>
             <div>
                 <?php
@@ -54,6 +59,7 @@ if (isset($_GET['delete_id'])) {
                             <th>Product</th>
                             <th>Quantity</th>
                             <th>Description</th>
+                            <th>Price</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -64,6 +70,7 @@ if (isset($_GET['delete_id'])) {
                                     <td><?= htmlspecialchars($product['product_name']) ?></td>
                                     <td><?= $product['stock'] ?></td>
                                     <td><?= $product['description'] ?></td>
+                                    <td><?= $product['price'] ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-danger" onclick="confirmDeleteProduct(<?= $product['id'] ?>, '<?= $product['product_name'] ?>')">Delete</button>
                                     </td>
@@ -100,6 +107,10 @@ if (isset($_GET['delete_id'])) {
                         <div class="mb-3">
                             <label for="productDescription" class="form-label">Description</label>
                             <textarea class="form-control" id="productDescription" name="description" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productPrice" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="productPrice" name="price" required>
                         </div>
                     </div>
                     <div class="modal-footer">

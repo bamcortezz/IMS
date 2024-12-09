@@ -120,7 +120,7 @@ class ProductSupplierFunctions
       }
    }
 
-   public function addProduct($product_name, $stock, $description)
+   public function addProduct($product_name, $stock, $description, $price)
    {
       $stmt = $this->runQuery("SELECT * FROM products WHERE product_name = :product_name");
       $stmt->execute(array(":product_name" => $product_name));
@@ -131,10 +131,10 @@ class ProductSupplierFunctions
          exit;
       }
 
-      $stmt = $this->runQuery("INSERT INTO products (product_name, stock, description) VALUES (:product_name, :stock, :description)");
-      $exec = $stmt->execute(array(":product_name" => $product_name, ":stock" => $stock, ":description" => $description));
+      $stmt = $this->runQuery("INSERT INTO products (product_name, stock, description, price) VALUES (:product_name, :stock, :description, :price)");
+      $execute = $stmt->execute(array(":product_name" => $product_name, ":stock" => $stock, ":description" => $description, ":price" => $price));
 
-      if ($exec) {
+      if ($execute) {
          $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product added successfully'];
          header("Location: ../admin/product.php");
          exit;
@@ -172,12 +172,15 @@ class ProductSupplierFunctions
 
    public function purchaseProduct($product_id, $supplier_id, $quantity)
    {
-      $stmt = $this->runQuery("SELECT stock FROM products WHERE id = :product_id");
+      $stmt = $this->runQuery("SELECT stock, price FROM products WHERE id = :product_id");
       $stmt->execute(array(":product_id" => $product_id));
 
       if ($stmt->rowCount() == 1) {
-         $product = $stmt->fetch(PDO::FETCH_ASSOC);
-         $current_stock = $product['stock'];
+         $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+         $current_stock = $userRow['stock'];
+         $product_price = $userRow['price'];
+
+         $total_price = $product_price * $quantity;
 
          $new_stock = $current_stock + $quantity;
 
@@ -185,8 +188,8 @@ class ProductSupplierFunctions
          $execute = $stmt->execute(array(":new_stock" => $new_stock, ":product_id" => $product_id));
 
          if ($execute) {
-            $stmt = $this->runQuery("INSERT INTO product_purchase (product_id, supplier_id, quantity) VALUES (:product_id, :supplier_id, :quantity)");
-            $stmt->execute(array(":product_id" => $product_id, ":supplier_id" => $supplier_id, ":quantity" => $quantity));
+            $stmt = $this->runQuery("INSERT INTO product_purchase (product_id, supplier_id, quantity, total_price) VALUES (:product_id, :supplier_id, :quantity, :total_price)");
+            $stmt->execute(array(":product_id" => $product_id, ":supplier_id" => $supplier_id, ":quantity" => $quantity, ":total_price" => $total_price));
 
             $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product quantity updated'];
             header("Location: ../admin/purchase-order.php");
@@ -202,6 +205,7 @@ class ProductSupplierFunctions
          exit;
       }
    }
+
 
    //FETCHING ACTIVE STATUS
    public function getUser()
@@ -220,7 +224,7 @@ class ProductSupplierFunctions
 
    public function getProduct()
    {
-      $stmt = $this->runQuery("SELECT id, product_name, stock, description FROM products WHERE active = 'active'");
+      $stmt = $this->runQuery("SELECT id, product_name, stock, description, price FROM products WHERE active = 'active'");
       $stmt->execute();
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
@@ -236,6 +240,13 @@ class ProductSupplierFunctions
    public function getArchiveSuppliers()
    {
       $stmt = $this->runQuery("SELECT id, supplier_name, contact_number FROM suppliers WHERE active = 'not_active'");
+      $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
+   public function getArchiveProducts()
+   {
+      $stmt = $this->runQuery("SELECT id, product_name, stock, description, price FROM products WHERE active = 'not_active'");
       $stmt->execute();
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
@@ -273,6 +284,21 @@ class ProductSupplierFunctions
       }
    }
 
+   public function reactivateProduct($id)
+   {
+      $stmt = $this->runQuery("UPDATE products SET active = 'active' WHERE id = :id AND active = 'not_active'");
+      $execute = $stmt->execute(array(":id" => $id));
+
+      if ($execute) {
+         $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product reactivated successfully.'];
+         header("Location: ../admin/product.php");
+         exit;
+      } else {
+         $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error reactivating product.'];
+         header("Location: ../admin/product.php");
+         exit;
+      }
+   }
 
    //FETHCING COUNTS
    public function getUserCount()
@@ -302,7 +328,6 @@ class ProductSupplierFunctions
       $stmt->execute();
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
    }
-
 
    public function runQuery($sql)
    {
@@ -337,9 +362,10 @@ if (isset($_POST['btn-product'])) {
       $product_name = $_POST['product_name'];
       $stock = $_POST['stock'];
       $description = $_POST['description'];
+      $price = $_POST['price'];
 
       $product = new ProductSupplierFunctions();
-      $product->addProduct($product_name, $stock, $description);
+      $product->addProduct($product_name, $stock, $description, $price);
    }
 }
 

@@ -40,7 +40,7 @@ if (isset($_GET['delete_id'])) {
                     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSupplierModal">Add Supplier</button>
                 </div>
                 <div>
-                    <a href="archive-supplier.php" class="btn btn-secondary">Show Archived Suppliers</a>
+                    <a href="archive-supplier.php" class="btn btn-warning">Show Archived Suppliers</a>
                 </div>
             </div>
             <div>

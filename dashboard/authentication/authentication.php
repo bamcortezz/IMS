@@ -26,6 +26,77 @@ class IMS
         $this->conn = $database->dbConnection();
     }
 
+    public function sendOtp($otp, $email)
+    {
+        if ($email == NULL) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'No email found'];
+            header("Location: ../../");
+            exit;
+        } else {
+
+            $stmt = $this->runQuery("SELECT * FROM users WHERE email = :email");
+            $stmt->execute(array(":email" => $email));
+            $stmt->fetch(pdo::FETCH_ASSOC);
+
+            if ($stmt->rowCount() > 0) {
+                $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Email taken'];
+                header("Location: ../../");
+                exit;
+            } else {
+                $_SESSION['OTP'] = $otp;
+
+                $subject = "OTP Verification";
+                $message = "
+                            <h1>OTP Verification</h1>
+							<p>Hello, $email</p>
+							<p>Your OTP is: $otp</p>
+							<p>If you didn't request an OTP, please ignore this email.</p>
+							<p>Thank you</p>
+                ";
+
+                $this->send_email($email, $message, $subject, $this->smtp_email, $this->smtp_password);
+                $_SESSION['alert'] = ['type' => 'success', 'message' => 'OTP Sent'];
+                header("Location: ../../verify-otp.php");
+                exit;
+            }
+        }
+    }
+
+    public function verifyOtp($username, $email, $password, $otp)
+    {
+        if ($otp == $_SESSION['OTP']) {
+            unset($_SESSION['OTP']);
+
+            $this->addUser($username, $email, $password);
+
+            $subject = "Verification Success";
+            $message = "
+                        <h1>Welcome</h1>
+						<p>Hello, <strong>$email</strong></p>
+						<p>Welcome to our System</p>
+						<p>If you did not sign up for an account, you can safely ignore this email.</p>
+						<p>Thank you!</p>
+            ";
+
+            $this->send_email($email, $message, $subject, $this->smtp_email, $this->smtp_password);
+            $_SESSION['alert'] = ['type' => 'success', 'message' => 'Thank you'];
+            header("Location: ../../");
+            exit;
+
+            unset($_SESSION['not_verify_username']);
+            unset($_SESSION['not_verify_email']);
+            unset($_SESSION['not_verify_password']);
+        } else if ($otp == NULL) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'No otp found'];
+            header("Location: ../../verify-otp.php");
+            exit;
+        } else {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Invalid'];
+            header("Location: ../../verify-otp.php");
+            exit;
+        }
+    }
+
     public function addUser($username, $email, $password)
     {
         if (empty($username) || empty($email) || empty($password)) {
@@ -39,13 +110,13 @@ class IMS
 
         if ($stmt->rowCount() == 1) {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Username already exists'];
-            header("Location: ../../index.php");
+            header("Location: ../../");
             exit;
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Invalid email format'];
-            header("Location: ../../index.php");
+            header("Location: ../../");
             exit;
         }
 
@@ -54,40 +125,39 @@ class IMS
 
         if ($stmt->rowCount() > 0) {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Email already exists'];
-            header("Location: ../../index.php");
+            header("Location: ../../");
             exit;
         }
 
         if (!preg_match('/^[A-Z]/', $password)) {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must start with a capital letter'];
-            header("Location: ../../index.php");
-            exit;
-        }
-
-        if (!preg_match('/[\W_]/', $password)) {
-            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must contain at least one symbol'];
-            header("Location: ../../index.php");
+            header("Location: ../../");
             exit;
         }
 
         if (strlen($password) < 8) {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must be at least 8 characters long'];
-            header("Location: ../../index.php");
+            header("Location: ../../");
             exit;
         }
 
+        if (!preg_match('/[\W_]/', $password)) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must contain at least one symbol'];
+            header("Location: ../../");
+            exit;
+        }
 
-        $hash_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->runQuery('INSERT INTO users (username, email, password) VALUES (:username, :email, :password)');
-        $execute = $stmt->execute(array(":username" => $username, ":email" => $email, ":password" => $hash_password));
+        $execute = $stmt->execute(array(":username" => $username, ":email" => $email, ":password" => $hashed_password));
 
         if ($execute) {
             $_SESSION['alert'] = ['type' => 'success', 'message' => 'User Added'];
-            header("Location: ../../index.php");
+            header("Location: ../../");
             exit;
         } else {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error adding user'];
-            header("Location: ../../index.php");
+            header("Location: ../../");
             exit;
         }
     }
@@ -254,13 +324,27 @@ class IMS
 if (isset($_POST['btn-signup'])) {
     if (isset($_POST['username'], $_POST['email'], $_POST['password'])) {
 
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+        $_SESSION['not_verify_username'] = trim($_POST['username']);
+        $_SESSION['not_verify_email'] = trim($_POST['email']);
+        $_SESSION['not_verify_password'] = trim($_POST['password']);
 
-        $addUser = new IMS();
-        $addUser->addUser($username, $email, $password);
+        $email = trim($_POST['email']);;
+        $otp = rand(100000, 999999);
+
+        $addAdmin = new IMS();
+        $addAdmin->sendOtp($otp, $email);
     }
+}
+
+if (isset($_POST['btn-verify'])) {
+    $username = $_SESSION['not_verify_username'];
+    $email = $_SESSION['not_verify_email'];
+    $password = $_SESSION['not_verify_password'];
+
+    $otp = trim($_POST['otp']);
+
+    $adminVerify = new IMS();
+    $adminVerify->verifyOtp($username, $email, $password, $otp);
 }
 
 if (isset($_POST['btn-signin'])) {

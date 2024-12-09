@@ -107,4 +107,32 @@ function reactivateSupplier(supplierId, supplierName) {
     });
 }
 
+function reactivateProduct(productId, productName) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to reactivate the product: "${productName}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, reactivate!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "archive-product.php?id=" + productId;
+        }
+    });
+}
+
+function updatePriceAndTotal() {
+    var productSelect = document.getElementById('productId');
+    var selectedOption = productSelect.options[productSelect.selectedIndex];
+    var price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+    var quantity = parseInt(document.getElementById('quantity').value) || 0;
+
+    document.getElementById('productPrice').value = price ? '₱' + price.toFixed(2) : '';
+
+    var totalPrice = price * quantity;
+    document.getElementById('totalPrice').value = totalPrice ? '₱' + totalPrice.toFixed(2) : '';
+}
+
 

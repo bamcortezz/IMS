@@ -32,9 +32,9 @@ if (isset($_GET['reactivate_id'])) {
 
       <div class="main-content">
          <h1>Archived Suppliers</h1>
-         
+
          <div class="d-flex justify-content-end mb-3">
-            <a href="supplier.php" class="btn btn-secondary">Show Active Supplier</a>
+            <a href="supplier.php" class="btn btn-warning">Show Active Supplier</a>
          </div>
          <div>
             <?php

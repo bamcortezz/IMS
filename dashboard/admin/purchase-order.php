@@ -32,26 +32,26 @@ if (!$isLogin->isUserLogged()) {
                     <?php
                     if (isset($_SESSION['alert']) && isset($_SESSION['alert']['type']) && isset($_SESSION['alert']['message'])) {
                         $alert = $_SESSION['alert'];
-                        echo "  <div class='alert alert-{$alert['type']} alert-dismissible fade show'       role='alert'>
+                        echo "  <div class='alert alert-{$alert['type']} alert-dismissible fade show' role='alert'>
                                     {$alert['message']}
                                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                                 </div>";
                         unset($_SESSION['alert']);
                     }
                     ?>
-                    <form method="POST" action="../authentication/class.php">
+                    <form method="POST" action="../authentication/product-class.php">
                         <div class="mb-3">
                             <label for="productId" class="form-label">Select Product</label>
-                            <select class="form-select" id="productId" name="product_id" required>
+                            <select class="form-select" id="productId" name="product_id" required onchange="updatePriceAndTotal()">
                                 <option value="" disabled selected>Select a product</option>
                                 <?php foreach ($purchase_order->getProduct() as $product): ?>
-                                    <option value="<?= $product['id'] ?>"><?= $product['product_name'] ?></option>
+                                    <option value="<?= $product['id'] ?>" data-price="<?= $product['price'] ?>"><?= $product['product_name'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="quantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="quantity" name="quantity" required>
+                            <input type="number" class="form-control" id="quantity" name="quantity" required oninput="updatePriceAndTotal()">
                         </div>
                         <div class="mb-3">
                             <label for="supplierId" class="form-label">Select Supplier</label>
@@ -62,6 +62,19 @@ if (!$isLogin->isUserLogged()) {
                                 <?php endforeach; ?>
                             </select>
                         </div>
+
+                        <!-- Display price here -->
+                        <div class="mb-3">
+                            <label for="productPrice" class="form-label">Product Price</label>
+                            <input type="text" class="form-control" id="productPrice" readonly>
+                        </div>
+
+                        <!-- Display total price here -->
+                        <div class="mb-3">
+                            <label for="totalPrice" class="form-label">Total Price</label>
+                            <input type="text" class="form-control" id="totalPrice" readonly>
+                        </div>
+
                         <div class="d-flex justify-content-end pt-3">
                             <button type="submit" class="btn btn-success" name="btn-purchase">Purchase Product</button>
                         </div>
@@ -70,7 +83,6 @@ if (!$isLogin->isUserLogged()) {
             </div>
         </div>
     </div>
-
 
     <?php include '../../includes/link-js.php' ?>
 </body>

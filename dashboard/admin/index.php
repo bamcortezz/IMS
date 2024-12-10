@@ -59,7 +59,7 @@ if (!$isLogin->isUserLogged()) {
 
             <div class="card mt-3">
                 <div class="card-header">
-                    <h3>Recent Logs</h3>
+                    <h3>Audit Logs</h3>
                 </div>
                 <div class="card-body">
                     <table class="table table-striped table-hover">

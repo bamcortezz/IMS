@@ -24,6 +24,18 @@ class ProductSupplierFunctions
          $execute = $stmt->execute(array(":user_id" => $userId));
 
          if ($execute) {
+
+            $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(array(":id" => $_SESSION['session']));
+            $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $role = $userRow['role'];
+            $activity = "the $role has successfully deleted a user";
+            $user_id = $userRow['id'];
+
+            $_SESSION['session'] = $user_id;
+            $this->logs($activity, $user_id);
+
             $_SESSION['alert'] = ['type' => 'success', 'message' => 'User successfully deleted.'];
             header("Location: ../admin/user-management.php");
             exit;
@@ -63,6 +75,18 @@ class ProductSupplierFunctions
       $execute = $stmt->execute(array(":supplier_name" => $supplier_name, ":contact_number" => $contact_number));
 
       if ($execute) {
+
+         $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+         $stmt->execute(array(":id" => $_SESSION['session']));
+         $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+         $role = $userRow['role'];
+         $activity = "the $role has successfully added a supplier";
+         $user_id = $userRow['id'];
+
+         $_SESSION['session'] = $user_id;
+         $this->logs($activity, $user_id);
+
          $_SESSION['alert'] = ['type' => 'success', 'message' => 'Supplier added successfully'];
          header("Location: ../admin/supplier.php");
          exit;
@@ -79,6 +103,17 @@ class ProductSupplierFunctions
          $execute = $stmt->execute(array(":supplier_name" => $supplier_name, ":contact_number" => $contact_number, ":id" => $id));
 
          if ($execute) {
+            $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(array(":id" => $_SESSION['session']));
+            $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $role = $userRow['role'];
+            $activity = "the $role has successfully updated a supplier";
+            $user_id = $userRow['id'];
+
+            $_SESSION['session'] = $user_id;
+            $this->logs($activity, $user_id);
+
             $_SESSION['alert'] = ['type' => 'success', 'message' => 'Supplier edit successfully'];
             header("Location: ../admin/supplier.php");
             exit;
@@ -105,6 +140,18 @@ class ProductSupplierFunctions
          $execute = $stmt->execute(array(":suppliers_id" => $supplierId));
 
          if ($execute) {
+
+            $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(array(":id" => $_SESSION['session']));
+            $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $role = $userRow['role'];
+            $activity = "the $role has successfully deleted a supplier";
+            $user_id = $userRow['id'];
+
+            $_SESSION['session'] = $user_id;
+            $this->logs($activity, $user_id);
+
             $_SESSION['alert'] = ['type' => 'success', 'message' => 'Supplier successfully deleted.'];
             header("Location: ../admin/supplier.php");
             exit;
@@ -135,6 +182,18 @@ class ProductSupplierFunctions
       $execute = $stmt->execute(array(":product_name" => $product_name, ":stock" => $stock, ":description" => $description, ":price" => $price));
 
       if ($execute) {
+
+         $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+         $stmt->execute(array(":id" => $_SESSION['session']));
+         $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+         $role = $userRow['role'];
+         $activity = "the $role has successfully added a product";
+         $user_id = $userRow['id'];
+
+         $_SESSION['session'] = $user_id;
+         $this->logs($activity, $user_id);
+
          $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product added successfully'];
          header("Location: ../admin/product.php");
          exit;
@@ -155,6 +214,18 @@ class ProductSupplierFunctions
          $execute = $stmt->execute(array(":product_id" => $productId));
 
          if ($execute) {
+
+            $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(array(":id" => $_SESSION['session']));
+            $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $role = $userRow['role'];
+            $activity = "the $role has successfully deleted a product";
+            $user_id = $userRow['id'];
+
+            $_SESSION['session'] = $user_id;
+            $this->logs($activity, $user_id);
+
             $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product deleted.'];
             header("Location: ../admin/product.php");
             exit;
@@ -188,6 +259,19 @@ class ProductSupplierFunctions
          $execute = $stmt->execute(array(":new_stock" => $new_stock, ":product_id" => $product_id));
 
          if ($execute) {
+
+
+            $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(array(":id" => $_SESSION['session']));
+            $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $role = $userRow['role'];
+            $activity = "the $role has successfully purchased a product";
+            $user_id = $userRow['id'];
+
+            $_SESSION['session'] = $user_id;
+            $this->logs($activity, $user_id);
+
             $stmt = $this->runQuery("INSERT INTO product_purchase (product_id, supplier_id, quantity, total_price) VALUES (:product_id, :supplier_id, :quantity, :total_price)");
             $stmt->execute(array(":product_id" => $product_id, ":supplier_id" => $supplier_id, ":quantity" => $quantity, ":total_price" => $total_price));
 
@@ -258,6 +342,18 @@ class ProductSupplierFunctions
       $execute = $stmt->execute(array(":id" => $id));
 
       if ($execute) {
+
+         $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+         $stmt->execute(array(":id" => $_SESSION['session']));
+         $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+         $role = $userRow['role'];
+         $activity = "the $role has successfully reactivated a user";
+         $user_id = $userRow['id'];
+
+         $_SESSION['session'] = $user_id;
+         $this->logs($activity, $user_id);
+
          $_SESSION['alert'] = ['type' => 'success', 'message' => 'Reactivate Successful'];
          header("Location: ../admin/user-management.php");
          exit;
@@ -274,6 +370,18 @@ class ProductSupplierFunctions
       $execute = $stmt->execute(array(":id" => $id));
 
       if ($execute) {
+
+         $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+         $stmt->execute(array(":id" => $_SESSION['session']));
+         $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+         $role = $userRow['role'];
+         $activity = "the $role has successfully reactivated a supplier";
+         $user_id = $userRow['id'];
+
+         $_SESSION['session'] = $user_id;
+         $this->logs($activity, $user_id);
+
          $_SESSION['alert'] = ['type' => 'success', 'message' => 'Supplier reactivated successfully.'];
          header("Location: ../admin/supplier.php");
          exit;
@@ -290,6 +398,18 @@ class ProductSupplierFunctions
       $execute = $stmt->execute(array(":id" => $id));
 
       if ($execute) {
+         
+         $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+         $stmt->execute(array(":id" => $_SESSION['session']));
+         $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+         $role = $userRow['role'];
+         $activity = "the $role has successfully reactivated a product";
+         $user_id = $userRow['id'];
+
+         $_SESSION['session'] = $user_id;
+         $this->logs($activity, $user_id);
+
          $_SESSION['alert'] = ['type' => 'success', 'message' => 'Product reactivated successfully.'];
          header("Location: ../admin/product.php");
          exit;
@@ -324,9 +444,15 @@ class ProductSupplierFunctions
 
    public function getRecentLogs()
    {
-      $stmt = $this->runQuery("SELECT * FROM logs ORDER BY created_at DESC LIMIT 6");
+      $stmt = $this->runQuery("SELECT * FROM logs ORDER BY created_at DESC LIMIT 10");
       $stmt->execute();
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
+   }
+
+   public function logs($activiy, $user_id)
+   {
+      $stmt = $this->runQuery("INSERT INTO  logs (user_id, activity) VALUES (:user_id, :activity)");
+      $stmt->execute(array("user_id" => $user_id, ":activity" => $activiy));
    }
 
    public function runQuery($sql)

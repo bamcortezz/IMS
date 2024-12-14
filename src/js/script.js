@@ -135,4 +135,17 @@ function updatePriceAndTotal() {
     document.getElementById('totalPrice').value = totalPrice ? '₱' + totalPrice.toFixed(2) : '';
 }
 
+function updatePriceAndTotalSales() {
+    var productId = document.getElementById('productId').value;
+    var quantity = document.getElementById('quantity').value;
+
+    var productSelect = document.querySelector("#productId option[value='" + productId + "']");
+    var price = productSelect ? productSelect.getAttribute('data-price') : 0;
+
+    var totalPrice = price * quantity;
+
+    document.getElementById('productPrice').value = price ? '₱' + parseFloat(price).toFixed(2) : '';
+    document.getElementById('totalPrice').value = totalPrice ? '₱' + parseFloat(totalPrice).toFixed(2) : '';
+}
+
 

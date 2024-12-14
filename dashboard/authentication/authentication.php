@@ -28,6 +28,12 @@ class IMS
 
     public function sendOtp($otp, $email)
     {
+        if (empty($username) || empty($email) || empty($password)) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'All fields are required'];
+            header("Location: ../../index.php");
+            exit;
+        }
+
         if ($email == NULL) {
             $_SESSION['alert'] = ['type' => 'danger', 'message' => 'No email found'];
             header("Location: ../../");
@@ -99,12 +105,6 @@ class IMS
 
     public function addUser($username, $email, $password)
     {
-        if (empty($username) || empty($email) || empty($password)) {
-            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'All fields are required'];
-            header("Location: ../../index.php");
-            exit;
-        }
-
         $stmt = $this->runQuery("SELECT * FROM users WHERE username = :username");
         $stmt->execute(array(":username" => $username));
 
@@ -188,8 +188,8 @@ class IMS
 
         if ($stmt->rowCount() == 1) {
             if (password_verify($password, $userRow['password'])) {
-                $role = $userRow['role'];
-                $activiy = "the $role has successfully login";
+                $role = $userRow['username'];
+                $activiy = "$role has successfully logged in";
                 $user_id = $userRow['id'];
 
                 $_SESSION['session'] = $user_id;
@@ -252,6 +252,23 @@ class IMS
 
     public function resetPassword($userId, $newPassword)
     {
+        if (!preg_match('/^[A-Z]/', $newPassword)) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must start with a capital letter'];
+            header("Location: ../../");
+            exit;
+        }
+
+        if (strlen($newPassword) < 8) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must be at least 8 characters long'];
+            header("Location: ../../");
+            exit;
+        }
+
+        if (!preg_match('/[\W_]/', $newPassword)) {
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must contain at least one symbol'];
+            header("Location: ../../");
+            exit;
+        }
 
         $hash_password = password_hash($newPassword, PASSWORD_DEFAULT);
 
@@ -315,6 +332,17 @@ class IMS
 
     public function signOut()
     {
+        $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+        $stmt->execute(array(":id" => $_SESSION['session']));
+        $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $role = $userRow['username'];
+        $activity = "$role has successfully signed out";
+        $user_id = $userRow['id'];
+
+        $_SESSION['session'] = $user_id;
+        $this->logs($activity, $user_id);
+
         unset($_SESSION['session']);
         header("Location: ../../");
         exit;

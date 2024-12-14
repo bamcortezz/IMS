@@ -247,10 +247,7 @@ class IMS
 
     public function resetPassword($userId, $newPassword)
     {
-<<<<<<< HEAD
-=======
-
->>>>>>> 7dea1daa3ddb8541838b659b04061f3c20218798
+       
         $hash_password = password_hash($newPassword, PASSWORD_DEFAULT);
 
         $stmt = $this->runQuery("UPDATE users SET password = :password, reset_token = NULL WHERE id = :user_id");

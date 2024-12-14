@@ -29,8 +29,8 @@ class ProductSupplierFunctions
             $stmt->execute(array(":id" => $_SESSION['session']));
             $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $role = $userRow['role'];
-            $activity = "the $role has successfully deleted a user";
+            $role = $userRow['username'];
+            $activity = "$role has successfully deleted a user";
             $user_id = $userRow['id'];
 
             $_SESSION['session'] = $user_id;
@@ -80,8 +80,8 @@ class ProductSupplierFunctions
          $stmt->execute(array(":id" => $_SESSION['session']));
          $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-         $role = $userRow['role'];
-         $activity = "the $role has successfully added a supplier";
+         $role = $userRow['username'];
+         $activity = "$role has successfully added a supplier";
          $user_id = $userRow['id'];
 
          $_SESSION['session'] = $user_id;
@@ -107,8 +107,8 @@ class ProductSupplierFunctions
             $stmt->execute(array(":id" => $_SESSION['session']));
             $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $role = $userRow['role'];
-            $activity = "the $role has successfully updated a supplier";
+            $role = $userRow['username'];
+            $activity = "$role has successfully updated a supplier";
             $user_id = $userRow['id'];
 
             $_SESSION['session'] = $user_id;
@@ -145,8 +145,8 @@ class ProductSupplierFunctions
             $stmt->execute(array(":id" => $_SESSION['session']));
             $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $role = $userRow['role'];
-            $activity = "the $role has successfully deleted a supplier";
+            $role = $userRow['username'];
+            $activity = "$role has successfully deleted a supplier";
             $user_id = $userRow['id'];
 
             $_SESSION['session'] = $user_id;
@@ -187,8 +187,8 @@ class ProductSupplierFunctions
          $stmt->execute(array(":id" => $_SESSION['session']));
          $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-         $role = $userRow['role'];
-         $activity = "the $role has successfully added a product";
+         $role = $userRow['username'];
+         $activity = "$role has successfully added a product";
          $user_id = $userRow['id'];
 
          $_SESSION['session'] = $user_id;
@@ -219,8 +219,8 @@ class ProductSupplierFunctions
             $stmt->execute(array(":id" => $_SESSION['session']));
             $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $role = $userRow['role'];
-            $activity = "the $role has successfully deleted a product";
+            $role = $userRow['username'];
+            $activity = "$role has successfully deleted a product";
             $user_id = $userRow['id'];
 
             $_SESSION['session'] = $user_id;
@@ -265,8 +265,8 @@ class ProductSupplierFunctions
             $stmt->execute(array(":id" => $_SESSION['session']));
             $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $role = $userRow['role'];
-            $activity = "the $role has successfully purchased a product";
+            $role = $userRow['username'];
+            $activity = "$role has successfully purchased a product";
             $user_id = $userRow['id'];
 
             $_SESSION['session'] = $user_id;
@@ -290,6 +290,58 @@ class ProductSupplierFunctions
       }
    }
 
+   public function createSalesOrder($product_id, $customer_id, $quantity)
+   {
+      $stmt = $this->runQuery("SELECT price, stock FROM products WHERE id = :product_id");
+      $stmt->execute(array(":product_id" => $product_id));
+
+      if ($stmt->rowCount() == 1) {
+         $product = $stmt->fetch(PDO::FETCH_ASSOC);
+         $current_stock = $product['stock'];
+         $product_price = $product['price'];
+
+         if ($current_stock >= $quantity) {
+            $total_price = $product_price * $quantity;
+
+            $new_stock = $current_stock - $quantity;
+            $stmt = $this->runQuery("UPDATE products SET stock = :new_stock WHERE id = :product_id");
+            $execute = $stmt->execute(array(":new_stock" => $new_stock, ":product_id" => $product_id));
+
+            if ($execute) {
+
+               $stmt = $this->runQuery("INSERT INTO sales_order (product_id, customer_id, quantity, total_price) VALUES (:product_id, :customer_id, :quantity, :total_price)");
+               $stmt->execute(array(":product_id" => $product_id, ":customer_id" => $customer_id, ":quantity" => $quantity, ":total_price" => $total_price));
+
+               $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+               $stmt->execute(array(":id" => $_SESSION['session']));
+               $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+               $role = $userRow['username'];
+               $activity = "$role has successfully created a sales order";
+               $user_id = $userRow['id'];
+
+               $_SESSION['session'] = $user_id;
+               $this->logs($activity, $user_id);
+
+               $_SESSION['alert'] = ['type' => 'success', 'message' => 'Sales order created successfully'];
+               header("Location: ../admin/sales-order.php");
+               exit;
+            } else {
+               $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error updating stock'];
+               header("Location: ../admin/sales-order.php");
+               exit;
+            }
+         } else {
+
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Not enough stock available'];
+            header("Location: ../admin/sales-order.php");
+            exit;
+         }
+      } else {
+         $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Product not found'];
+         header("Location: ../admin/sales-order.php");
+         exit;
+      }
+   }
 
    //FETCHING ACTIVE STATUS
    public function getUser()
@@ -347,8 +399,8 @@ class ProductSupplierFunctions
          $stmt->execute(array(":id" => $_SESSION['session']));
          $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-         $role = $userRow['role'];
-         $activity = "the $role has successfully reactivated a user";
+         $role = $userRow['username'];
+         $activity = "$role has successfully reactivated a user";
          $user_id = $userRow['id'];
 
          $_SESSION['session'] = $user_id;
@@ -375,8 +427,8 @@ class ProductSupplierFunctions
          $stmt->execute(array(":id" => $_SESSION['session']));
          $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-         $role = $userRow['role'];
-         $activity = "the $role has successfully reactivated a supplier";
+         $role = $userRow['username'];
+         $activity = "$role has successfully reactivated a supplier";;
          $user_id = $userRow['id'];
 
          $_SESSION['session'] = $user_id;
@@ -398,13 +450,13 @@ class ProductSupplierFunctions
       $execute = $stmt->execute(array(":id" => $id));
 
       if ($execute) {
-         
+
          $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
          $stmt->execute(array(":id" => $_SESSION['session']));
          $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
 
-         $role = $userRow['role'];
-         $activity = "the $role has successfully reactivated a product";
+         $role = $userRow['username'];
+         $activity = "$role has successfully reactivated a product";
          $user_id = $userRow['id'];
 
          $_SESSION['session'] = $user_id;
@@ -505,3 +557,14 @@ if (isset($_POST['btn-purchase'])) {
       $purchase->purchaseProduct($product_id, $supplier_id, $quantity);
    }
 }
+
+if (isset($_POST['btn-sales-order'])) {
+
+   $product_id = $_POST['product_id'];
+   $customer_id = $_POST['customer_id'];
+   $quantity = $_POST['quantity'];
+
+   $sales = new ProductSupplierFunctions();
+   $sales->createSalesOrder($product_id, $customer_id, $quantity);
+}
+

@@ -247,24 +247,10 @@ class IMS
 
     public function resetPassword($userId, $newPassword)
     {
-        if (!preg_match('/^[A-Z]/', $newPassword)) {
-            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must start with a capital letter'];
-            header("Location: ../../");
-            exit;
-        }
+<<<<<<< HEAD
+=======
 
-        if (strlen($newPassword) < 8) {
-            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must be at least 8 characters long'];
-            header("Location: ../../");
-            exit;
-        }
-
-        if (!preg_match('/[\W_]/', $newPassword)) {
-            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Password must contain at least one symbol'];
-            header("Location: ../../");
-            exit;
-        }
-
+>>>>>>> 7dea1daa3ddb8541838b659b04061f3c20218798
         $hash_password = password_hash($newPassword, PASSWORD_DEFAULT);
 
         $stmt = $this->runQuery("UPDATE users SET password = :password, reset_token = NULL WHERE id = :user_id");

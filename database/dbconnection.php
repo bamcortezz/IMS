@@ -16,9 +16,9 @@
                 $this->password = "";
             } else {
                 $this->host = "localhost";
-                $this->db_name = "";
-                $this->username = "";
-                $this->password = "";
+                $this->db_name = "u772084991_ims";
+                $this->username = "u772084991_ims";
+                $this->password = "Inventory2024@";
             }
         }
 

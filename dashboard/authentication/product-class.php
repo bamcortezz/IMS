@@ -154,12 +154,12 @@ class ProductSupplierFunctions
             header("Location: ../admin/user-management.php");
             exit;
          } else {
-            $_SESSION['alert'] = ['type' => 'success', 'message' => 'Error updating user'];
+            $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Error updating user'];
             header("Location: ../admin/user-management.php");
             exit;
          }
       } else {
-         $_SESSION['alert'] = ['type' => 'success', 'message' => 'No user found'];
+         $_SESSION['alert'] = ['type' => 'danger', 'message' => 'No user found'];
          header("Location: ../admin/user-management.php");
          exit;
       }

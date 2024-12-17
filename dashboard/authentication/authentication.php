@@ -221,7 +221,7 @@ class IMS
         $stmt = $this->runQuery("UPDATE users SET reset_token = :reset_token WHERE id = :user_id");
         $stmt->execute(array(":reset_token" => $resetToken, ":user_id" => $userId));
 
-        $resetLink = "http://localhost/ims/reset-password.php?token=$resetToken&id=$userId";
+        $resetLink = "https://boozecount.site/reset-password.php?token=$resetToken&id=$userId";
         $message = "Please click on the following link to reset your password: <a href='$resetLink'>Click Here!</a>";
         $subject = "Password Reset Request";
 

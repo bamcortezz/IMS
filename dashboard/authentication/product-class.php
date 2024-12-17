@@ -129,6 +129,42 @@ class ProductSupplierFunctions
       }
    }
 
+   public function updateRole($id, $userAdmin)
+   {
+      $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+      $stmt->execute(array(":id" => $id));
+
+      if ($stmt->rowCount() > 0) {
+         $stmt = $this->runQuery("UPDATE users SET role = :role WHERE id = :id");
+         $execute = $stmt->execute(array(":role" => $userAdmin, ":id" => $id));
+
+         if ($execute) {
+            $stmt = $this->runQuery("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(array(":id" => $_SESSION['session']));
+            $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $role = $userRow['username'];
+            $activity = "$role has successfully updated a role";
+            $user_id = $userRow['id'];
+
+            $_SESSION['session'] = $user_id;
+            $this->logs($activity, $user_id);;
+
+            $_SESSION['alert'] = ['type' => 'success', 'message' => 'Role edit successfully'];
+            header("Location: ../admin/user-management.php");
+            exit;
+         } else {
+            $_SESSION['alert'] = ['type' => 'success', 'message' => 'Error updating user'];
+            header("Location: ../admin/user-management.php");
+            exit;
+         }
+      } else {
+         $_SESSION['alert'] = ['type' => 'success', 'message' => 'No user found'];
+         header("Location: ../admin/user-management.php");
+         exit;
+      }
+   }
+
    public function deleteSupplier($supplierId)
    {
       $stmt = $this->runQuery("SELECT * FROM suppliers WHERE id = :suppliers_id");
@@ -568,3 +604,10 @@ if (isset($_POST['btn-sales-order'])) {
    $sales->createSalesOrder($product_id, $customer_id, $quantity);
 }
 
+if (isset($_POST['btn-edit-role'])) {
+   $id = $_POST['id'];
+   $userAdmin = $_POST['role'];
+
+   $editRole = new ProductSupplierFunctions();
+   $editRole->updateRole($id, $userAdmin);
+}

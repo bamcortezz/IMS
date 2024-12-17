@@ -72,6 +72,7 @@ if (isset($_GET['reactivate_id'])) {
                                     <td><?= $user['email'] ?></td>
                                     <td><?= $user['role'] ?></td>
                                     <td>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal" onclick="editRole(<?= $user['id'] ?>, '<?= $user['username'] ?>', '<?= $user['role'] ?>')">Edit</button>
                                         <button class="btn btn-sm btn-danger" onclick="confirmDeleteUser(<?= $user['id'] ?>, '<?= $user['username'] ?>')">Delete</button>
                                     </td>
                                 </tr>
@@ -83,6 +84,33 @@ if (isset($_GET['reactivate_id'])) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editRoleModalLabel">Edit User Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRoleForm" method="POST" action="../authentication/product-class.php">
+                        <input type="hidden" id="editUserId" name="id" />
+                        <div class="mb-3">
+                            <label for="roleSelect" class="form-label">Role</label>
+                            <select class="form-select" id="roleSelect" name="role" required>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="editRoleForm" class="btn btn-primary" name="btn-edit-role">Save Changes</button>
+                </div>
             </div>
         </div>
     </div>

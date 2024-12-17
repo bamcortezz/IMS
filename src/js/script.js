@@ -43,6 +43,11 @@ function editSupplier(id, name, contact) {
     editModal.show();
 }
 
+function editRole(userId, userName, userRole) {
+    document.getElementById('editUserId').value = userId;
+    document.getElementById('roleSelect').value = userRole;
+}
+
 function confirmDeleteSupplier(id, username) {
     Swal.fire({
         title: 'Are you sure?',
